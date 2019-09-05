@@ -1,5 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {UserInfoModel} from '../models/userInfoModel';
+import {HttpClient} from '@angular/common/http';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-display-user-data',
@@ -17,12 +19,18 @@ export class DisplayUserDataComponent implements OnInit {
     zipcode: 10283,
     password: 'Idasn2x2#'
   });
+  private subscriber: any;
 
 
-  constructor() {
+  constructor(private http: HttpClient, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
+    this.subscriber = this.route.params.subscribe(params => {
+      this.http.get('/api/v1/customer' + params.uid).subscribe((data:any) => {
+        this.user = new UserInfoModel(data.customer);
+      });
+    });
   }
 
 }

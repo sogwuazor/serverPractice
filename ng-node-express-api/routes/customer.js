@@ -8,6 +8,14 @@ router.get('/', function(req, res, next) {
   res.json({error: "Invalid Customer UID."});
 });
 
+router.get('/all', (req, res, next) => {
+  try {
+    res.json({data: CustomerService.getAll()});
+  } catch(ex) {
+    return next(ex);
+  }
+});
+
 /* adds a new customer to the list */
 router.post('/', async (req, res, next) =>
 {

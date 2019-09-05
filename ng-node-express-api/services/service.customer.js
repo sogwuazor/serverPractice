@@ -73,15 +73,19 @@ class CustomerService {
 
       Object.assign(customer, data);
     } else {
-      throw new Error('Unable to retrieve a customer by (uid:' + cuid + ')');
+      throw new Error('Unable to retrieve a customer by (uid:' + uid + ')');
     }
+  }
+
+  static getAll(){
+    return customers;
   }
 
   static delete(uid) {
     if (customers[uid] != null) {
       delete customers[uid];
     } else {
-      throw new Error('Unable to retrieve a customer by (uid:' + cuid + ')');
+      throw new Error('Unable to retrieve a customer by (uid:' + uid + ')');
     }
   }
 }

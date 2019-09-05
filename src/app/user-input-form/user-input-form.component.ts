@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormControl, Validators} from '@angular/forms';
+import { FormBuilder, FormGroup, Validators} from '@angular/forms';
+
+//integrate service
+import {HttpClient} from '@angular/common/http';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-user-input-form',
@@ -9,12 +13,19 @@ import { FormBuilder, FormGroup, FormControl, Validators} from '@angular/forms';
 export class UserInputFormComponent implements OnInit {
   registered: boolean;
   submitted: boolean;
+  guid: string;
   userForm: FormGroup;
-  serviceErrors: any;
+  serviceErrors: any = {};
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: FormBuilder, private http: HttpClient, private router: Router) {
     this.registered = false;
     this.submitted = false;
+
+    this.http.get('/api/v1/generate_uid').subscribe((data:any) => {
+      this.guid = data.guid;
+    }, (error) => {
+      console.error('There was an error generating the proper GUID on the server', error);
+    });
   }
 
   ngOnInit() {
@@ -57,6 +68,14 @@ export class UserInputFormComponent implements OnInit {
 
     if (this.userForm.invalid !== true) {
       let data: any = Object.assign({guid: this.guid}, this.userForm.value);
+
+      this.http.post('/api/v1/customer', data).subscribe((data: any) => {
+        const path = '/user/' + data.customer.uid;
+
+        this.router.navigate([path]);
+      }, error => {
+        this.serviceErrors = error.error.error;
+      });
       this.registered = true;
     }
   }
